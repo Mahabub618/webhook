@@ -1,6 +1,9 @@
 package com.github.mahabub618.kafkaboilerplate.controller;
 
 import com.github.mahabub618.kafkaboilerplate.dto.messageRequest;
+import com.github.mahabub618.kafkaboilerplate.event.WikimediaEvent;
+import com.launchdarkly.eventsource.EventHandler;
+import com.launchdarkly.eventsource.EventSource;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.header.Headers;
 import org.slf4j.Logger;
@@ -13,6 +16,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.net.URI;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
@@ -25,16 +29,22 @@ public class KafkaController {
 
     private final KafkaTemplate<String, Object> template;
     private final String topicName;
+    private final String wikiTopic;
     private final int messagesPerRequest;
+    private final String wikiUrl;
     private CountDownLatch latch;
 
     public KafkaController(
             final KafkaTemplate<String, Object> template,
             @Value("${tpd.topic-name}") final String topicName,
-            @Value("${tpd.messages-per-request}") final int messagesPerRequest) {
+            @Value("${wiki.topic-name}") final  String wikiTopic,
+            @Value("${tpd.messages-per-request}") final int messagesPerRequest,
+            @Value("${wiki.url}") final String wikiUrl) {
         this.template = template;
         this.topicName = topicName;
+        this.wikiTopic = wikiTopic;
         this.messagesPerRequest = messagesPerRequest;
+        this.wikiUrl = wikiUrl;
     }
 
     @GetMapping("/hello")
@@ -47,6 +57,21 @@ public class KafkaController {
         latch.await(60, TimeUnit.SECONDS);
         logger.info("All messages received");
         return "Hello Kafka!";
+    }
+
+    @GetMapping("/wikimedia")
+    public String wikimedia() throws Exception {
+        EventHandler eventHandler = new WikimediaEvent(this.template, this.wikiTopic);
+        EventSource.Builder builder = new EventSource.Builder(eventHandler, URI.create(this.wikiUrl));
+        EventSource eventSource = builder.build();
+
+        // start the producer in another thred
+        eventSource.start();
+
+        // we produce for 5 seconds and block the program until then
+        TimeUnit.SECONDS.sleep(5);
+
+        return "Wikimedia Event";
     }
 
     @KafkaListener(topics = "advice-topic", clientIdPrefix = "json",

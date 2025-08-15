@@ -10,3 +10,7 @@ spring:
 tpd:
   topic-name: advice-topic
   messages-per-request: 10
+
+wiki:
+  url: https://stream.wikimedia.org/v2/stream/recentchange
+  topic-name: wikimedia
