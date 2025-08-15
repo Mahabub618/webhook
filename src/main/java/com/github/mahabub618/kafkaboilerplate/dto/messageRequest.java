@@ -1,4 +1,7 @@
 package com.github.mahabub618.kafkaboilerplate.dto;
 
-public record messageRequest() {
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+public record messageRequest(@JsonProperty("message") String message,
+                             @JsonProperty("identifier") int identifier) {
 }
