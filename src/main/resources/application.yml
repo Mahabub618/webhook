@@ -3,8 +3,8 @@ spring:
     bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS}
     properties:
       security.protocol: SASL_SSL
-      sasl.mechanism: SCRAM
-      sasl.jaas.config: org.apache.kafka.common.security.plain.PlainLoginModule required username='${SPRING_KAFKA_API_KEY}' password='${SPRING_KAFKA_API_SECRET}';
+      sasl.mechanism: SCRAM-SHA-256
+      sasl.jaas.config: org.apache.kafka.common.security.scram.ScramLoginModule required username='${SPRING_KAFKA_API_KEY}' password='${SPRING_KAFKA_API_SECRET}';
     consumer:
       group-id: tpd-loggers
       auto-offset-reset: earliest
@@ -13,11 +13,3 @@ spring:
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
-
-tpd:
-  topic-name: advice-topic
-  messages-per-request: 10
-
-wiki:
-  url: https://stream.wikimedia.org/v2/stream/recentchange
-  topic-name: wikimedia
