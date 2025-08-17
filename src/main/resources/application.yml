@@ -1,11 +1,24 @@
 spring:
   kafka:
+    bootstrap-servers: d2gphehmodb6qsnjf2l0.any.ap-south-1.mpx.prd.cloud.redpanda.com:9092
+
+    properties:
+      security:
+        protocol: SASL_SSL
+      sasl:
+        mechanism: SCRAM-SHA-256   # or SCRAM-SHA-256 based on your Redpanda cluster setup
+        jaas:
+          config: org.apache.kafka.common.security.scram.ScramLoginModule required username="mahabub637" password="aduQqonUEgOoKKdFmhM4hyGgxUoA1C";
+
     consumer:
       group-id: tpd-loggers
       auto-offset-reset: earliest
-    # change this property if you are using your own
-    # Kafka cluster or your Docker IP is different
-    bootstrap-servers: localhost:9092
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
 
 tpd:
   topic-name: advice-topic
