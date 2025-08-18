@@ -27,3 +27,6 @@ tpd:
 wiki:
   url: https://stream.wikimedia.org/v2/stream/recentchange
   topic-name: wikimedia
+
+bitbucket:
+  topic-name: event

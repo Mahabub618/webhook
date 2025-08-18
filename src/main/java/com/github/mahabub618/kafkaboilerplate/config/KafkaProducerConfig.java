@@ -1,5 +1,6 @@
 package com.github.mahabub618.kafkaboilerplate.config;
 
+import com.github.mahabub618.kafkaboilerplate.dto.BitbucketCommitNotification;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -24,6 +25,9 @@ public class KafkaProducerConfig {
     @Value("${tpd.topic-name}")
     private String topicName;
 
+    @Value("${bitbucket.topic-name}")
+    private String bitbucketTopicName;
+
     @Bean
     public Map<String, Object> producerConfigs() {
         Map<String, Object> props = new HashMap<>(kafkaProperties.buildProducerProperties());
@@ -43,7 +47,17 @@ public class KafkaProducerConfig {
     }
 
     @Bean
+    public ProducerFactory<String, BitbucketCommitNotification> bitbucketProducerFactory() {
+        return new DefaultKafkaProducerFactory<>(producerConfigs());
+    }
+
+    @Bean
     public KafkaTemplate<String, Object> kafkaTemplate() {
         return new KafkaTemplate<>(producerFactory());
+    }
+
+    @Bean
+    public KafkaTemplate<String, BitbucketCommitNotification> bitbucketKafkaTemplate() {
+        return new KafkaTemplate<>(bitbucketProducerFactory());
     }
 }
