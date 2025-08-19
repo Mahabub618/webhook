@@ -23,11 +23,11 @@ public class WebhookService {
         this.kafkaProducer = kafkaProducer;
     }
 
-    public void processWebhook(String source, Map<String, Object> payload, String topic) {
+    public void processWebhook(String source, String payload, String topic) {
         WebhookProcessor processor = processors.get(source.toLowerCase());
         if (processor != null) {
             processor.parseWebhookPayload(payload)
-                    .ifPresent(notification -> kafkaProducer.sendNotification(topic, notification));
+                    .ifPresent(event -> kafkaProducer.sendNotification(topic, event));
         }
     }
 }

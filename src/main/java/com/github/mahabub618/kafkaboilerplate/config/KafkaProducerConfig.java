@@ -1,6 +1,8 @@
 package com.github.mahabub618.kafkaboilerplate.config;
 
 import com.github.mahabub618.kafkaboilerplate.dto.CommitNotification;
+import com.github.mahabub618.kafkaboilerplate.dto.PushEvent;
+import com.github.mahabub618.kafkaboilerplate.dto.PushEventResponse;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -49,6 +51,11 @@ public class KafkaProducerConfig {
     }
 
     @Bean
+    public ProducerFactory<String, PushEventResponse> commitNotificationProducerFactory() {
+        return new DefaultKafkaProducerFactory<>(producerConfigs());
+    }
+
+    @Bean
     public KafkaTemplate<String, Object> kafkaTemplate() {
         return new KafkaTemplate<>(producerFactory());
     }
@@ -56,5 +63,10 @@ public class KafkaProducerConfig {
     @Bean
     public KafkaTemplate<String, CommitNotification> bitbucketKafkaTemplate() {
         return new KafkaTemplate<>(bitbucketProducerFactory());
+    }
+
+    @Bean
+    public KafkaTemplate<String, PushEventResponse> commitNotificationKafkaTemplate() {
+        return new KafkaTemplate<>(commitNotificationProducerFactory());
     }
 }
