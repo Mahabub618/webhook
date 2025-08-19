@@ -64,20 +64,20 @@ public class KafkaController {
         return "Hello Kafka!";
     }
 
-    @GetMapping("/wikimedia")
-    public String wikimedia() throws Exception {
-        EventHandler eventHandler = new WikimediaEvent(this.template, this.wikiTopic);
-        EventSource.Builder builder = new EventSource.Builder(eventHandler, URI.create(this.wikiUrl));
-        EventSource eventSource = builder.build();
-
-        // start the producer in another thred
-        eventSource.start();
-
-        // we produce for 5 seconds and block the program until then
-        TimeUnit.SECONDS.sleep(5);
-
-        return "Wikimedia Event";
-    }
+//    @GetMapping("/wikimedia")
+//    public String wikimedia() throws Exception {
+//        EventHandler eventHandler = new WikimediaEvent(this.template, this.wikiTopic);
+//        EventSource.Builder builder = new EventSource.Builder(eventHandler, URI.create(this.wikiUrl));
+//        EventSource eventSource = builder.build();
+//
+//        // start the producer in another thred
+//        eventSource.start();
+//
+//        // we produce for 5 seconds and block the program until then
+//        TimeUnit.SECONDS.sleep(5);
+//
+//        return "Wikimedia Event";
+//    }
 
     @KafkaListener(topics = "advice-topic", clientIdPrefix = "json",
             containerFactory = "kafkaListenerContainerFactory")

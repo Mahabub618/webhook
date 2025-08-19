@@ -1,19 +1,29 @@
-package com.github.mahabub618.kafkaboilerplate.util;
+package com.github.mahabub618.kafkaboilerplate.service.processor;
 
-import com.github.mahabub618.kafkaboilerplate.dto.BitbucketCommitNotification;
+import com.github.mahabub618.kafkaboilerplate.dto.CommitNotification;
+import com.github.mahabub618.kafkaboilerplate.service.KafkaProducerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-@Component
-public class WebhookPayloadParser {
-    private static final Logger logger = LoggerFactory.getLogger(WebhookPayloadParser.class);
+@Service
+public class BitbucketWebhookProcessor implements WebhookProcessor {
+    private final KafkaProducerService kafkaProducer;
+    private final String topic;
+    private static final Logger logger = LoggerFactory.getLogger(BitbucketWebhookProcessor.class);
+    public BitbucketWebhookProcessor(KafkaProducerService kafkaProducer,
+                                     @Value("${webhhok.topic}") String topicName) {
+        this.kafkaProducer = kafkaProducer;
+        this.topic = topicName;
+    }
 
-    public Optional<BitbucketCommitNotification> parsePayload(Map<String, Object> payload) {
+    @Override
+    public Optional<CommitNotification> parseWebhookPayload(Map<String, Object> payload) {
         try {
             if (payload.get("repository") instanceof Map<?, ?> repo &&
                     payload.get("push") instanceof Map<?, ?> push &&
@@ -44,10 +54,10 @@ public class WebhookPayloadParser {
         }
     }
 
-    private Optional<BitbucketCommitNotification> parseCommit(Map<?, ?> commit,
-                                                              String repoName,
-                                                              String repoUrl,
-                                                              String branchName) {
+    private Optional<CommitNotification> parseCommit(Map<?, ?> commit,
+                                                     String repoName,
+                                                     String repoUrl,
+                                                     String branchName) {
         String hash = getString(commit, "hash");
         String message = getString(commit, "message").trim();
         String commitUrl = getNestedString(commit, "links", "html", "href");
@@ -59,7 +69,7 @@ public class WebhookPayloadParser {
             avatarUrl = getNestedString(author, "user", "links", "avatar", "href");
         }
 
-        BitbucketCommitNotification notification = new BitbucketCommitNotification(
+        CommitNotification notification = new CommitNotification(
                 repoName,
                 repoUrl,
                 branchName,
@@ -67,14 +77,15 @@ public class WebhookPayloadParser {
                 avatarUrl,
                 message,
                 commitUrl,
-                hash.substring(0, 7)
+                hash.substring(0, 7),
+                "bitbucket"
         );
 
-        // Detailed logging of parsed data
         logger.info("""
         🚀 Successfully parsed Bitbucket webhook:
         ┌───────────────────────────────────────
-        │ Repository: {}
+        │ Source: Bitbucket
+        | Repository: {}
         │ Branch: {}
         │ Commit: {} by {}
         │ Message: {}
