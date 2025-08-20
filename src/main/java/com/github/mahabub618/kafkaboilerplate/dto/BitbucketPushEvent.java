@@ -46,16 +46,20 @@ public class BitbucketPushEvent implements PushEvent {
     }
 
     @Override
-    public Map<String, String> getCommits() {
-        Map<String, String> commitMap = new HashMap<>();
+    public Map<String, CommitInfo> getCommits() {
+        Map<String, CommitInfo> commitMap = new HashMap<>();
         if (push != null && push.getChanges() != null) {
             for (Change change : push.getChanges()) {
                 if (change.getCommits() != null) {
                     for (Commit commit : change.getCommits()) {
+                        String shortHash = commit.getHash().substring(0, 7);
                         String cleanMessage = commit.getMessage() != null
                                 ? commit.getMessage().trim()
                                 : "";
-                        commitMap.put(commit.getHash().substring(0, 7), cleanMessage);
+                        String commitUrl = commit.getLinks() != null && commit.getLinks().getHtml() != null
+                                ? commit.getLinks().getHtml().getHref()
+                                : null;
+                        commitMap.put(shortHash, new CommitInfo(cleanMessage, commitUrl));
                     }
                 }
             }
@@ -142,6 +146,9 @@ public class BitbucketPushEvent implements PushEvent {
         @JsonProperty("author")
         private Author author;
 
+        @JsonProperty("links")
+        private Links links;
+
         // Getters and setters
 
         public String getHash() {
@@ -166,6 +173,14 @@ public class BitbucketPushEvent implements PushEvent {
 
         public void setAuthor(Author author) {
             this.author = author;
+        }
+
+        public Links getLinks() {
+            return links;
+        }
+
+        public void setLinks(Links links) {
+            this.links = links;
         }
     }
 
@@ -215,16 +230,32 @@ public class BitbucketPushEvent implements PushEvent {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class UserLinks {
         @JsonProperty("avatar")
-        private Link avatar;
+        private Avatar avatar;
 
         // Getters and setters
 
-        public Link getAvatar() {
+        public Avatar getAvatar() {
             return avatar;
         }
 
-        public void setAvatar(Link avatar) {
+        public void setAvatar(Avatar avatar) {
             this.avatar = avatar;
+        }
+    }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class Avatar {
+        @JsonProperty("href")
+        private String href;
+
+        // Getters and setters
+
+        public String getHref() {
+            return href;
+        }
+
+        public void setHref(String href) {
+            this.href = href;
         }
     }
 
@@ -258,21 +289,21 @@ public class BitbucketPushEvent implements PushEvent {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Links {
         @JsonProperty("html")
-        private Link html;
+        private Html html;
 
         // Getters and setters
 
-        public Link getHtml() {
+        public Html getHtml() {
             return html;
         }
 
-        public void setHtml(Link html) {
+        public void setHtml(Html html) {
             this.html = html;
         }
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public static class Link {
+    public static class Html {
         @JsonProperty("href")
         private String href;
 

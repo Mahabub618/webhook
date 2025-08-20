@@ -41,11 +41,14 @@ public class GitHubPushEvent implements PushEvent {
     }
 
     @Override
-    public Map<String, String> getCommits() {
-        Map<String, String> commitMap = new HashMap<>();
+    public Map<String, CommitInfo> getCommits() {
+        Map<String, CommitInfo> commitMap = new HashMap<>();
         if (commits != null) {
             for (Commit commit : commits) {
-                commitMap.put(commit.getId().substring(0, 7), commit.getMessage());
+                String shortHash = commit.getId() != null ? commit.getId().substring(0, 7) : "";
+                String cleanMessage = commit.getMessage() != null ? commit.getMessage().trim() : "";
+                String commitUrl = commit.getUrl() != null ? commit.getUrl() : "";
+                commitMap.put(shortHash, new CommitInfo(cleanMessage, commitUrl));
             }
         }
         return commitMap;
@@ -103,6 +106,9 @@ public class GitHubPushEvent implements PushEvent {
         @JsonProperty("message")
         private String message;
 
+        @JsonProperty("url")
+        private String url;
+
         // Getters and setters
 
         public String getId() {
@@ -119,6 +125,14 @@ public class GitHubPushEvent implements PushEvent {
 
         public void setMessage(String message) {
             this.message = message;
+        }
+
+        public String getUrl() {
+            return url;
+        }
+
+        public void setUrl(String url) {
+            this.url = url;
         }
     }
 

@@ -11,7 +11,7 @@ public class PushEventResponse {
     private String branchName;
     private String authorName;
     private String avatarUrl;
-    private Map<String, String> commits;
+    private Map<String, PushEvent.CommitInfo> commits;
 
     public PushEventResponse(GitHubPushEvent pushEvent) {
         this.source = pushEvent.getSource();
@@ -53,5 +53,5 @@ public class PushEventResponse {
     public String getAvatarUrl() { return avatarUrl; }
 
     @JsonProperty("commits")
-    public Map<String, String> getCommits() { return commits; }
+    public Map<String, PushEvent.CommitInfo> getCommits() { return commits; }
 }
