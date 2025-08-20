@@ -23,8 +23,8 @@ public class WebhookController {
     }
 
     @PostMapping("/bitbucket")
-    public ResponseEntity<Void> handleBitbucket(@RequestBody Map<String, Object> payload) {
-//        webhookService.processWebhook("bitbucket", payload, topicName);
+    public ResponseEntity<Void> handleBitbucket(@RequestBody String payload) {
+        webhookService.processWebhook("bitbucket", payload, topicName);
         return ResponseEntity.ok().build();
     }
 

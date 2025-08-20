@@ -23,6 +23,16 @@ public class PushEventResponse {
         this.commits = pushEvent.getCommits();
     }
 
+    public PushEventResponse(BitbucketPushEvent pushEvent) {
+        this.source = pushEvent.getSource();
+        this.repoName = pushEvent.getRepoName();
+        this.repoUrl = pushEvent.getRepoUrl();
+        this.branchName = pushEvent.getBranchName();
+        this.authorName = pushEvent.getAuthorName();
+        this.avatarUrl = pushEvent.getAvatarUrl();
+        this.commits = pushEvent.getCommits();
+    }
+
     // Getters with @JsonProperty annotations
     @JsonProperty("source")
     public String getSource() { return source; }

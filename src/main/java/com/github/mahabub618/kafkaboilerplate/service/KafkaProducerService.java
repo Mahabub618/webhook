@@ -1,7 +1,4 @@
 package com.github.mahabub618.kafkaboilerplate.service;
-
-import com.github.mahabub618.kafkaboilerplate.dto.CommitNotification;
-import com.github.mahabub618.kafkaboilerplate.dto.PushEvent;
 import com.github.mahabub618.kafkaboilerplate.dto.PushEventResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

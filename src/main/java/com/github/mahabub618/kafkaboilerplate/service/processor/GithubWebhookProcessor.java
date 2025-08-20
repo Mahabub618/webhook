@@ -1,7 +1,6 @@
 package com.github.mahabub618.kafkaboilerplate.service.processor;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.mahabub618.kafkaboilerplate.dto.CommitNotification;
 import com.github.mahabub618.kafkaboilerplate.dto.GitHubPushEvent;
 import com.github.mahabub618.kafkaboilerplate.dto.PushEventResponse;
 import org.springframework.stereotype.Component;
