@@ -1,17 +1,17 @@
 spring:
   kafka:
-    bootstrap-servers: d2gphehmodb6qsnjf2l0.any.ap-south-1.mpx.prd.cloud.redpanda.com:9092
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
 
     properties:
       security:
-        protocol: SASL_SSL
+        protocol: ${KAFKA_SECURITY_PROTOCOL:PLAINTEXT}
       sasl:
-        mechanism: SCRAM-SHA-256   # or SCRAM-SHA-256 based on your Redpanda cluster setup
+        mechanism: ${KAFKA_SASL_MECHANISM:}
         jaas:
-          config: org.apache.kafka.common.security.scram.ScramLoginModule required username="mahabub637" password="aduQqonUEgOoKKdFmhM4hyGgxUoA1C";
+          config: org.apache.kafka.common.security.scram.ScramLoginModule required username="${KAFKA_USERNAME}" password="${KAFKA_PASSWORD}";
 
     consumer:
-      group-id: tpd-loggers
+      group-id: ${KAFKA_CONSUMER_GROUP_ID:tpd-loggers}
       auto-offset-reset: earliest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
@@ -21,12 +21,12 @@ spring:
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
 
 tpd:
-  topic-name: advice-topic
+  topic-name: ${ADVICE_TOPIC:advice-topic}
   messages-per-request: 10
 
 wiki:
-  url: https://stream.wikimedia.org/v2/stream/recentchange
-  topic-name: wikimedia
+  url: ${WIKIMEDIA_STREAM_URL:https://stream.wikimedia.org/v2/stream/recentchange}
+  topic-name: ${WIKIMEDIA_TOPIC:wikimedia}
 
 webhhok:
-  topic: event
+  topic: ${WEBHOOK_TOPIC:event}
