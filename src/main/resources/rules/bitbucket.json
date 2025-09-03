@@ -1,0 +1,16 @@
+{
+  "source": "bitbucket",
+  "repoName": "$.repository.name",
+  "repoUrl": "$.repository.links.html.href",
+  "branchName": "$.push.changes[0].new.name",
+  "authorName": "$.push.changes[0].commits[0].author.raw",
+  "avatarUrl": "$.push.changes[0].commits[0].author.user.links.avatar.href",
+  "commits": {
+    "listPath": "$.push.changes[*].commits[*]",
+    "idField": "hash",
+    "fields": {
+      "message": "message",
+      "commitUrl": "{repoUrl}/commits/{hash}"
+    }
+  }
+}

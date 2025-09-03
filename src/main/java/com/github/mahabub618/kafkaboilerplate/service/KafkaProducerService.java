@@ -1,5 +1,5 @@
 package com.github.mahabub618.kafkaboilerplate.service;
-import com.github.mahabub618.kafkaboilerplate.dto.PushEventResponse;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -9,15 +9,15 @@ import org.springframework.stereotype.Service;
 public class KafkaProducerService {
     private static final Logger logger = LoggerFactory.getLogger(KafkaProducerService.class);
 
-    private final KafkaTemplate<String, PushEventResponse> kafkaTemplate;
+    private final KafkaTemplate<String, Object> kafkaTemplate;
 
-    public KafkaProducerService(KafkaTemplate<String, PushEventResponse> kafkaTemplate) {
+    public KafkaProducerService(KafkaTemplate<String, Object> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
     }
 
-    public void sendNotification(String topic, PushEventResponse event) {
+    public void sendNotification(String topic, String key, Object event) {
         try {
-            kafkaTemplate.send(topic, event.getRepoName(), event);
+            kafkaTemplate.send(topic, key, event);
             logger.debug("Sent notification to Kafka: {}", event);
         } catch (Exception e) {
             logger.error("Failed to send notification to Kafka", e);

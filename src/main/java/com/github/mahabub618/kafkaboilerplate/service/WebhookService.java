@@ -3,31 +3,28 @@ package com.github.mahabub618.kafkaboilerplate.service;
 import com.github.mahabub618.kafkaboilerplate.service.processor.WebhookProcessor;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @Service
 public class WebhookService {
     private final Map<String, WebhookProcessor> processors;
     private final KafkaProducerService kafkaProducer;
 
-    public WebhookService(List<WebhookProcessor> processorList,
+    // Spring will inject beans keyed by bean name into this map
+    public WebhookService(Map<String, WebhookProcessor> processors,
                           KafkaProducerService kafkaProducer) {
-        this.processors = processorList.stream()
-                .collect(Collectors.toMap(
-                        p -> p.getClass().getSimpleName().replace("WebhookProcessor", "").toLowerCase(),
-                        Function.identity()
-                ));
+        this.processors = processors;
         this.kafkaProducer = kafkaProducer;
     }
 
     public void processWebhook(String source, String payload, String topic) {
+        if (source == null) return;
         WebhookProcessor processor = processors.get(source.toLowerCase());
         if (processor != null) {
             processor.parseWebhookPayload(payload)
-                    .ifPresent(event -> kafkaProducer.sendNotification(topic, event));
+                    .ifPresent(event -> kafkaProducer.sendNotification(topic, source, event));
+        } else {
+            // optional: log unknown source
         }
     }
 }

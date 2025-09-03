@@ -17,7 +17,7 @@ COPY --from=build /app/target/kafka-boilerplate-0.0.1-SNAPSHOT.jar app.jar
 EXPOSE 8080
 
 # Use environment variables with defaults
-ENV KAFKA_BOOTSTRAP_SERVERS=d2gphehmodb6qsnjf2l0.any.ap-south-1.mpx.prd.cloud.redpanda.com:9092
+ENV KAFKA_BOOTSTRAP_SERVERS=d2rsmlrvl6jo4ghjbm8g.any.ap-south-1.mpx.prd.cloud.redpanda.com:9092
 ENV KAFKA_SECURITY_PROTOCOL=SASL_SSL
 ENV KAFKA_SASL_MECHANISM=SCRAM-SHA-256
 ENV KAFKA_USERNAME=mahabub637

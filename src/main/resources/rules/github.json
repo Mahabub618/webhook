@@ -1,0 +1,16 @@
+{
+  "source": "github",
+  "repoName": "$.repository.full_name",
+  "repoUrl": "$.repository.html_url",
+  "branchName": "$.ref",
+  "authorName": "$.head_commit.committer.name",
+  "avatarUrl": "",
+  "commits": {
+    "listPath": "$.commits[*]",
+    "idField": "id",
+    "fields": {
+      "message": "message",
+      "commitUrl": "$.repository.html_url/commit/{id}"
+    }
+  }
+}
