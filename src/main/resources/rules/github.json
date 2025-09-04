@@ -10,7 +10,7 @@
     "idField": "id",
     "fields": {
       "message": "message",
-      "commitUrl": "$.repository.html_url/commit/{id}"
+      "commitUrl": "url"
     }
   }
 }
