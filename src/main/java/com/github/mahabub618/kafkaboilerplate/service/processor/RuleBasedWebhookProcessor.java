@@ -49,6 +49,23 @@ public class RuleBasedWebhookProcessor implements WebhookProcessor {
                     continue;
                 }
 
+                // This condition for github json to concate author name with email
+                // like "Mahabub <mahabub.rahman@tigerit.com>"
+                if (ruleVal instanceof Map) {
+                    Map<String, Object> maybeMap = (Map<String, Object>) ruleVal;
+                    if (maybeMap.containsKey("compose")) {
+                        Object composeObj = maybeMap.get("compose");
+                        if (composeObj instanceof List) {
+                            @SuppressWarnings("unchecked")
+                            List<?> tokens = (List<?>) composeObj;
+                            String composed = evaluateCompose(tokens, json);
+                            putValueToNode(root, key, composed);
+                            continue; // done for this key
+                        } // else fallthrough to literal mapping if compose isn't a list
+                    }
+                    // If not a compose map, treat it as a literal JSON node (see below)
+                }
+
                 if (ruleVal instanceof String) {
                     String pathOrLiteral = (String) ruleVal;
                     if (pathOrLiteral.isEmpty()) {
@@ -199,6 +216,33 @@ public class RuleBasedWebhookProcessor implements WebhookProcessor {
             logger.warn("Failed to build rulesJson for source=" + source, e);
             return Optional.empty();
         }
+    }
+
+    private String evaluateCompose(List<?> tokens, Object json) {
+        StringBuilder sb = new StringBuilder();
+        for (Object t : tokens) {
+            if (t == null) continue;
+            if (t instanceof String) {
+                String tok = (String) t;
+                if (tok.startsWith("$")) {
+                    try {
+                        Object val = JsonPath.read(json, tok);
+                        if (val != null) sb.append(String.valueOf(val));
+                    } catch (Exception ignored) {
+                        // treat missing path as empty
+                    }
+                } else {
+                    // literal token
+                    sb.append(tok);
+                }
+            } else {
+                // non-string token -> convert to string
+                sb.append(String.valueOf(t));
+            }
+        }
+        // collapse multiple spaces into one and trim leading/trailing space
+        String composed = sb.toString().replaceAll("\\s+", " ").trim();
+        return composed;
     }
 
     private void putValueToNode(ObjectNode node, String key, Object v) {

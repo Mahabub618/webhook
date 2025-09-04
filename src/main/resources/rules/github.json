@@ -3,7 +3,14 @@
   "repoName": "$.repository.full_name",
   "repoUrl": "$.repository.html_url",
   "branchName": "$.ref",
-  "authorName": "$.head_commit.committer.name",
+  "authorName": {
+    "compose": [
+      "$.head_commit.author.name",
+      " <",
+      "$.head_commit.author.email",
+      ">"
+    ]
+  },
   "avatarUrl": "",
   "commits": {
     "listPath": "$.commits[*]",
