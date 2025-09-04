@@ -59,7 +59,18 @@ public class RuleBasedWebhookProcessor implements WebhookProcessor {
                     if (pathOrLiteral.startsWith("$")) {
                         try {
                             Object v = JsonPath.read(json, pathOrLiteral);
-                            putValueToNode(root, key, v);
+                            // Special-case: if this is branchName and value is a full ref like "refs/heads/dev",
+                            // convert to the short branch name ("dev").
+                            if ("branchName".equals(key) && v instanceof String) {
+                                String s = (String) v;
+                                // If it looks like a ref, take the text after the last '/'
+                                if (s.contains("/")) {
+                                    s = s.substring(s.lastIndexOf('/') + 1);
+                                }
+                                putValueToNode(root, key, s);
+                            } else {
+                                putValueToNode(root, key, v);
+                            }
                         } catch (Exception ex) {
                             root.putNull(key);
                         }
